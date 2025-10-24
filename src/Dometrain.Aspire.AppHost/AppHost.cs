@@ -9,8 +9,19 @@ var mainDb = builder.AddPostgres("main-db", dbUsername, dbPassword, port: 5433)
     .WithDataVolume()
     .AddDatabase("dometrain");
 
+var cartDb = builder.AddAzureCosmosDB("cosmosdb")
+    .RunAsPreviewEmulator(resourceBuilder =>
+    {
+        resourceBuilder.WithLifetime(ContainerLifetime.Persistent);
+        resourceBuilder.WithDataVolume();
+        resourceBuilder.WithDataExplorer();
+    })
+    .AddCosmosDatabase("cartdb")
+    .AddContainer("carts", "/pk");
+
 builder.AddProject<Projects.Dometrain_Monolith_Api>("dometrain-api")
-    .WithReference(mainDb).WaitFor(mainDb);
+    .WithReference(mainDb).WaitFor(mainDb)
+    .WithReference(cartDb).WaitFor(cartDb);
 
 var app = builder.Build();
     
