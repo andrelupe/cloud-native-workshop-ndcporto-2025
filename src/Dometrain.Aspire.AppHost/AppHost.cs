@@ -19,8 +19,14 @@ var cartDb = builder.AddAzureCosmosDB("cosmosdb")
     .AddCosmosDatabase("cartdb")
     .AddContainer("carts", "/pk");
 
+var redis = builder.AddRedis("redis")
+    .WithRedisInsight()
+    .WithLifetime(ContainerLifetime.Persistent);
+
 builder.AddProject<Projects.Dometrain_Monolith_Api>("dometrain-api")
+    .WithReplicas(5)
     .WithReference(mainDb).WaitFor(mainDb)
+    .WithReference(redis).WaitFor(redis)
     .WithReference(cartDb).WaitFor(cartDb);
 
 var app = builder.Build();

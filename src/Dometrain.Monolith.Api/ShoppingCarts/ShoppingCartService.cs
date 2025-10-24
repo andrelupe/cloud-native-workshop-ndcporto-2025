@@ -1,5 +1,6 @@
 using Dometrain.Monolith.Api.Courses;
 using Dometrain.Monolith.Api.Students;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Dometrain.Monolith.Api.ShoppingCarts;
 
